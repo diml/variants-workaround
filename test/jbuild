@@ -1,6 +1,6 @@
 (executable
  ((name test)
-  (libraries (foo.impl foo))))
+  (libraries (foo.impl foo bar))))
 
 (alias
  ((name runtest)
