@@ -1,1 +1,1 @@
-include Foo_aux.S
+val x : int
