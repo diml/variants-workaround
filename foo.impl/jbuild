@@ -3,4 +3,6 @@
   (public_name foo.impl)
   (wrapped false)))
 
+;; It is important to use the exact same mli file so that the hash
+;; match
 (rule (copy# ${lib:foo:foo.mli} foo.mli))
