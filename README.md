@@ -6,18 +6,27 @@ will natively support library variants. However, at this point they
 are not yet supported.
 
 This repository provides a simple workaround to allow porting code
-relying on library variants to Dune. The idea is the following:
+relying on library variants to Dune. The repository is organized as
+follow:
 
-The `foo` directory contains a library `foo` defining a module `Foo`
-that we want to implement in another library. We declare to dune that
-this module has no implementation by writing
-`(modules_without_implementation (foo))` in the `jbuild` file of
-`foo`. In the `foo` directory, we only write `foo.mli` but no `foo.ml`
-file.
+- `foo/` contains a library `foo` defining a module `Foo` without
+  implementation
+- `foo.impl/` contains a library `foo.impl` that provides an
+  implementation for `Foo`
+- `bar/` contains a library `bar` depending only on `foo`
+- `test/` contains an executable depending on `foo` and `bar` and
+  `foo.impl`
 
-The `foo.impl` directory contains one implementation for foo. It
-contains `foo.ml` and a copy of `foo.mli`, created dynamically via a
-copy rule.
+This is a typical example of usage of library variants. To make this
+work it is important to follow these rules:
 
-The `test` directory contains an executable linking both `foo` and
-`foo.impl`.
+1. `foo/jbuild` must declare that module `foo` has no implementation
+   using a field `(modules_without_implementation (foo))`
+2. both `foo/jbuild` and `foo.impl/jbuild` must have `(wrapped false)`
+   to ensure the name of the object files match between `foo` and
+   `foo.impl`
+3. both `foo/jbuild` and `foo.impl/jbuild` must have `(flags
+   (:standard -no-keep-locs))` to make sure the cmi files are not
+   sensible to the filename
+4. `foo.impl/foo.mli` must be a copy of `foo/foo.mli` to make sure the
+   cmi files match. This should be ensured via a copy rule
